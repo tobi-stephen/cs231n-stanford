@@ -65,7 +65,9 @@ def sgd_momentum(w, dw, config=None):
     # TODO: Implement the momentum update formula. Store the updated value in #
     # the next_w variable. You should also use and update the velocity v.     #
     ###########################################################################
-    pass
+    v = config["momentum"] * v - config["learning_rate"] * dw
+    w +=  v
+    next_w = w
     ###########################################################################
     #                             END OF YOUR CODE                            #
     ###########################################################################
@@ -99,7 +101,8 @@ def rmsprop(w, dw, config=None):
     # in the next_w variable. Don't forget to update cache value stored in    #
     # config['cache'].                                                        #
     ###########################################################################
-    pass
+    config["cache"] = config["decay_rate"] * config["cache"] + (1 - config["decay_rate"]) * dw * dw
+    next_w = w - config["learning_rate"] * dw / (np.sqrt(config["cache"]) + config["epsilon"])
     ###########################################################################
     #                             END OF YOUR CODE                            #
     ###########################################################################
@@ -139,7 +142,24 @@ def adam(w, dw, config=None):
     # NOTE: In order to match the reference output, please modify t _before_  #
     # using it in any calculations.                                           #
     ###########################################################################
-    pass
+    t = config["t"]
+    m = config["m"]
+    beta1 = config["beta1"]
+    beta2 = config["beta2"]
+    v = config["v"]
+    lr = config["learning_rate"]
+    eps = config["epsilon"]
+
+    t += 1
+    m = (beta1 * m) + ((1 - beta1) * dw)
+    v = (beta2 * v) + ((1 - beta2) * dw * dw)
+    biasm = m / (1 - np.power(beta1, t))
+    biasv = v / (1 - np.power(beta2, t))
+    next_w = w - ((lr * biasm)/(np.sqrt(biasv) + eps))
+
+    config["m"] = m
+    config["v"] = v
+    config["t"] = t
     ###########################################################################
     #                             END OF YOUR CODE                            #
     ###########################################################################
